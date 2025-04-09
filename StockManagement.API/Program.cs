@@ -37,15 +37,32 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Add Identity Module
 builder.Services.AddIdentityModule(config);
 
+// Add Google Authentication
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = config["Authentication:Google:ClientId"];
+        options.ClientSecret = config["Authentication:Google:ClientSecret"];
+        options.CallbackPath = "/api/authentication/signin-google";
+        options.AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
+        options.TokenEndpoint = "https://oauth2.googleapis.com/token";
+        options.UserInformationEndpoint = "https://www.googleapis.com/oauth2/v2/userinfo";
+    });
+
 // Add CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
         builder =>
         {
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
+            builder.WithOrigins(
+                    "http://localhost:3000",
+                    "https://localhost:2702",
+                    "http://localhost:2702"
+                )
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
         });
 });
 
@@ -65,11 +82,11 @@ app.UseExceptionHandler("/error");
 app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 // Add Authentication & Authorization
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllers();
 

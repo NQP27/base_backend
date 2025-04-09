@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StockManagement.Domain.DTOs;
 using StockManagement.Domain.Entities;
 using StockManagement.Domain.Interfaces.Repositories;
+using System.Security.Claims;
 
 namespace StockManagement.API.Controllers
 {
@@ -120,34 +122,111 @@ namespace StockManagement.API.Controllers
             }
         }
 
-        //private async JwtSecurityToken GenerateJwtToken(ApplicationUser user, IList<string> roles)
-        //{
-        //    var claims = new List<Claim>
-        //    {
-        //        new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-        //        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        //        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-        //    };
+        [AllowAnonymous]
+        [HttpGet("external-login")]
+        public IActionResult ExternalLogin(string provider = GoogleDefaults.AuthenticationScheme, string? returnUrl = null)
+        {
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Identity", new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
 
-        //    // Add roles to claims
-        //    foreach (var role in roles)
-        //    {
-        //        claims.Add(new Claim(ClaimTypes.Role, role));
-        //    }
+        [AllowAnonymous]
+        [HttpGet("signin-google")]
+        public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
+        {
+            returnUrl ??= Url.Content("~/");
+            if (remoteError != null)
+            {
+                return BadRequest(new { message = $"Error from external provider: {remoteError}" });
+            }
 
-        //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        //    var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["Jwt:ExpireDays"]));
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return BadRequest(new { message = "Error loading external login information." });
+            }
 
-        //    var token = new JwtSecurityToken(
-        //        _configuration["Jwt:Issuer"],
-        //        _configuration["Jwt:Issuer"],
-        //        claims,
-        //        expires: expires,
-        //        signingCredentials: creds
-        //    );
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
-        //    return token;
-        //}
+            if (signInResult.Succeeded)
+            {
+                var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                if (user == null)
+                {
+                    return StatusCode(500, new { message = "Cannot find user after successful external sign in." });
+                }
+                var tokenResult = await _authenRepo.GenerateJwtToken(user);
+                if (tokenResult == null)
+                {
+                    return StatusCode(500, new { message = "Failed to generate token after external login." });
+                }
+                return Ok(tokenResult);
+            }
+
+            if (signInResult.IsLockedOut)
+            {
+                return StatusCode(423, new { message = "User account locked out." });
+            }
+            else
+            {
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? string.Empty;
+                var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? string.Empty;
+
+                if (email == null)
+                {
+                    return BadRequest(new { message = "Email claim not received from external provider. Cannot proceed." });
+                }
+
+                var existingUser = await _userManager.FindByEmailAsync(email);
+                if (existingUser != null)
+                {
+                    var addLoginResult = await _userManager.AddLoginAsync(existingUser, info);
+                    if (!addLoginResult.Succeeded)
+                    {
+                        return StatusCode(500, new { message = "Error linking external account to existing user.", errors = addLoginResult.Errors });
+                    }
+                    await _signInManager.SignInAsync(existingUser, isPersistent: false);
+                    var tokenResult = await _authenRepo.GenerateJwtToken(existingUser);
+                    if (tokenResult == null)
+                    {
+                        return StatusCode(500, new { message = "Failed to generate token after linking account.", errors = tokenResult });
+                    }
+                    return Ok(tokenResult);
+                }
+                else
+                {
+                    var newUser = new ApplicationUser
+                    {
+                        UserName = email,
+                        Email = email,
+                        FirstName = firstName,
+                        LastName = lastName,
+                        EmailConfirmed = true
+                    };
+
+                    var createUserResult = await _userManager.CreateAsync(newUser);
+                    if (createUserResult.Succeeded)
+                    {
+                        var addLoginResult = await _userManager.AddLoginAsync(newUser, info);
+                        if (addLoginResult.Succeeded)
+                        {
+                            await _signInManager.SignInAsync(newUser, isPersistent: false);
+                            var tokenResult = await _authenRepo.GenerateJwtToken(newUser);
+                            if (tokenResult == null)
+                            {
+                                return StatusCode(500, new { message = "Failed to generate token for new user.", errors = tokenResult });
+                            }
+                            return Ok(tokenResult);
+                        }
+                        await _userManager.DeleteAsync(newUser);
+                        return StatusCode(500, new { message = "Error linking external account to newly created user.", errors = addLoginResult.Errors });
+                    }
+                    return StatusCode(500, new { message = "Error creating new user.", errors = createUserResult.Errors });
+                }
+            }
+        }
+
     }
 }
