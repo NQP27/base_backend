@@ -1,4 +1,4 @@
-using BeLight.Application.Extensions;
+﻿using BeLight.Application.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -32,7 +32,12 @@ builder.Services.AddAplication(config);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+        sqlOptions =>
+        {
+            sqlOptions.CommandTimeout(120);
+            sqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
+        }));
+
 
 // Add Identity Module
 builder.Services.AddIdentityModule(config);

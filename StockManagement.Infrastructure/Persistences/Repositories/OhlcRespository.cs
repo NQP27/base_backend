@@ -104,7 +104,7 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
                 query = query.Where(x => x.id_m5 == request.id_m5);
             }
 
-            var result = await query.OrderBy(x => x.datetime).ToListAsync(cancellationToken);
+            var result = await query.Take(100).OrderBy(x => x.datetime).ToListAsync(cancellationToken);
             return _mapper.Map<List<OhlcDTO>>(result);
         }
         #endregion
