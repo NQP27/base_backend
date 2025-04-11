@@ -1,19 +1,14 @@
-using System;
-
 namespace StockManagement.Domain.Entities
 {
     public class OhlcM5 : OhlcBase
     {
-        public long? IdMonth { get; set; }
-        public long? IdWeek { get; set; }
-        public long? IdDay { get; set; }
-        public long? IdH12 { get; set; }
-        public long? IdH4 { get; set; }
-        public long? IdH1 { get; set; }
-        public long? IdM30 { get; set; }
-        public long? IdM15 { get; set; }
-
-        // Navigation properties
-        public Asset Asset { get; set; }
+        public long? id_month { get; set; }
+        public long? id_week { get; set; }
+        public long? id_day { get; set; }
+        public long? id_h12 { get; set; }
+        public long? id_h4 { get; set; }
+        public long? id_h1 { get; set; }
+        public long? id_m30 { get; set; }
+        public long? id_m15 { get; set; }
     }
 } 

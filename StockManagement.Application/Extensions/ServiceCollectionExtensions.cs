@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StockManagement.Application.Configurations.AutoMapper;
+using StockManagement.Application.CQRS.Query;
 using StockManagement.Application.Services;
 using StockManagement.Domain.Interfaces.Services;
 
@@ -13,11 +14,11 @@ namespace BeLight.Application.Extensions
             // Register Automapper
             services.AddAutoMapper(typeof(AutoMapperProfile));
 
-            // Register MediatR
-            //services.AddMediatR(cfg =>
-            //{
-            //    //cfg.RegisterServicesFromAssemblies(typeof(CreateLocationCommand).Assembly);
-            //});
+            //Register MediatR
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssemblies(typeof(ListCandleQuery).Assembly);
+            });
 
             services.AddTransient<IJwtService, JwtService>();
 

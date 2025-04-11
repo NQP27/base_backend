@@ -5,21 +5,21 @@ namespace StockManagement.Domain.Entities
     public abstract class OhlcBase
     {
         [Key]
-        public long Id { get; set; }
-        public long AssetId { get; set; }
-        public string DataSource { get; set; }
-        public string Broker { get; set; }
-        public string AccountType { get; set; }
-        public string AccountName { get; set; }
-        public decimal? Open { get; set; }
-        public decimal? Close { get; set; }
-        public decimal? High { get; set; }
-        public decimal? Low { get; set; }
-        public decimal? Co { get; set; }
-        public decimal? Hl { get; set; }
-        public decimal? TickVol { get; set; }
-        public decimal? RealVol { get; set; }
-        public DateTime? DateTime { get; set; }
-        public string Direction { get; set; }
+        public long id { get; set; }
+        public long asset_id { get; set; }
+        public string data_source { get; set; }
+        public string broker { get; set; }
+        public string account_type { get; set; }
+        public string account_name { get; set; }
+        public decimal? open { get; set; }
+        public decimal? close { get; set; }
+        public decimal? high { get; set; }
+        public decimal? low { get; set; }
+        public decimal? co { get; set; }
+        public decimal? hl { get; set; }
+        public decimal? tick_vol { get; set; }
+        public decimal? real_vol { get; set; }
+        public DateTime? datetime { get; set; }
+        public string direction { get; set; }
     }
 }

@@ -5,18 +5,19 @@ namespace StockManagement.Domain.Interfaces.Context
 {
     public interface IApplicationDbContext
     {
+        public DbSet<ApplicationUser> ApplicationUser { get; set; }
         public DbSet<ApplicationRole> ApplicationRole { get; set; }
-        public DbSet<Asset> Asset { get; set; }
-        public DbSet<OhlcDay> OhlcDay { get; set; }
-        public DbSet<OhlcH1> OhlcH1 { get; set; }
-        public DbSet<OhlcH12> OhlcH12 { get; set; }
-        public DbSet<OhlcH4> OhlcH4 { get; set; }
-        public DbSet<OhlcM1> OhlcM1 { get; set; }
-        public DbSet<OhlcM15> OhlcM15 { get; set; }
-        public DbSet<OhlcM30> OhlcM30 { get; set; }
-        public DbSet<OhlcM5> OhlcM5 { get; set; }
-        public DbSet<OhlcMonth> OhlcMonth { get; set; }
-        public DbSet<OhlcWeek> OhlcWeek { get; set; }
+        public DbSet<assets> assets { get; set; }
+        public DbSet<ohlc_day> ohlc_day { get; set; }
+        public DbSet<ohlc_h1> ohlc_h1 { get; set; }
+        public DbSet<ohlc_h12> ohlc_h12 { get; set; }
+        public DbSet<ohlc_h4> ohlc_h4 { get; set; }
+        public DbSet<ohlc_m1> ohlc_m1 { get; set; }
+        public DbSet<ohlc_m15> ohlc_m15 { get; set; }
+        public DbSet<ohlc_m30> ohlc_m30 { get; set; }
+        public DbSet<ohlc_m5> ohlc_m5 { get; set; }
+        public DbSet<ohlc_month> ohlc_month { get; set; }
+        public DbSet<ohlc_week> ohlc_week { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 

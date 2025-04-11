@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StockManagement.Domain.Interfaces.Context;
 using StockManagement.Domain.Interfaces.Repositories;
+using StockManagement.Infrastructure.Data;
 using StockManagement.Infrastructure.Persistences.Repositories;
 
 namespace StockManagement.Infrastructure.Extensions
@@ -15,6 +17,8 @@ namespace StockManagement.Infrastructure.Extensions
             //        b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
             services.AddScoped(typeof(IAuthenticationRepository), typeof(AuthenticationRepository));
+            services.AddScoped(typeof(IOhlcRepository), typeof(OhlcRepository));
+            services.AddScoped(typeof(IApplicationDbContext), typeof(ApplicationDbContext));
 
             return services;
         }
