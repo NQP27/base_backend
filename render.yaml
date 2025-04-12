@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: stock
+    runtime: dotnet
+    repo: https://github.com/NQP27/base_backend
+    branch: main
+    buildCommand: dotnet publish -c Release -o out
+    startCommand: dotnet out/StockManagement.dll
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
