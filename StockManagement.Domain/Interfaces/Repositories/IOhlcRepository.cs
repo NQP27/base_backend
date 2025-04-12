@@ -1,10 +1,12 @@
 ﻿using StockManagement.Domain.DTOs;
 using StockManagement.Domain.DTOs.Query;
+using StockManagement.Shared.Handler;
 
 namespace StockManagement.Domain.Interfaces.Repositories
 {
     public interface IOhlcRepository
     {
+        Task<PaginatedData<AssetDTO>> ListSymbol(ListSymbolQueryDTO query, CancellationToken cancellationToken);
         Task<List<OhlcDTO>> ListCandleM1(ListCandleQueryDTO query, CancellationToken cancellationToken);
         Task<List<OhlcDTO>> ListCandleM5(ListCandleQueryDTO query, CancellationToken cancellationToken);
         Task<List<OhlcDTO>> ListCandleM15(ListCandleQueryDTO query, CancellationToken cancellationToken);

@@ -5,6 +5,7 @@ using StockManagement.Domain.DTOs;
 using StockManagement.Domain.DTOs.Query;
 using StockManagement.Domain.Interfaces.Context;
 using StockManagement.Domain.Interfaces.Repositories;
+using StockManagement.Shared.Handler;
 
 namespace StockManagement.Infrastructure.Persistences.Repositories
 {
@@ -23,23 +24,45 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
             _applicationDbContext = applicationDbContext;
             _mapper = mapper;
         }
-
+        #region ListSymbol
+        public async Task<PaginatedData<AssetDTO>> ListSymbol(ListSymbolQueryDTO query, CancellationToken cancellationToken)
+        {
+            // Sử dụng cú pháp LINQ trực tiếp để tránh vấn đề với tên thuộc tính
+            var queryResult = from asset in _applicationDbContext.assets
+                              select asset;
+            // Lọc theo Symbol nếu được cung cấp
+            if (!string.IsNullOrEmpty(query.Symbol))
+            {
+                queryResult = queryResult.Where(x => x.symbol.ToLower().Contains(query.Symbol));
+            }
+            var cnt = queryResult.Count();
+            var result = await queryResult.Skip((query.PageNumber - 1) * query.PageSize).Take(query.PageSize).ToListAsync(cancellationToken);
+            return new PaginatedData<AssetDTO>
+            {
+                TotalCount = cnt,
+                PageSize = query.PageSize,
+                PageNumber = query.PageNumber,
+                Data = _mapper.Map<List<AssetDTO>>(result)
+            };
+        }
+        #endregion
         #region ListCandleM1
         public async Task<List<OhlcDTO>> ListCandleM1(ListCandleQueryDTO request, CancellationToken cancellationToken)
         {
             // Sử dụng cú pháp LINQ trực tiếp để tránh vấn đề với tên thuộc tính
             var query = from candle in _applicationDbContext.ohlc_m1
+                        where candle.asset_id == request.SymbolID
                         select candle;
 
             // Lọc theo Symbol nếu được cung cấp
-            if (!string.IsNullOrEmpty(request.Symbol))
-            {
-                query = from candle in query
-                        join asset in _applicationDbContext.assets
-                        on candle.asset_id equals asset.id
-                        where asset.symbol == request.Symbol
-                        select candle;
-            }
+            //if (!string.IsNullOrEmpty(request.Symbol))
+            //{
+            //    query = from candle in query
+            //            join asset in _applicationDbContext.assets
+            //            on candle.asset_id equals asset.id
+            //            where asset.symbol == request.Symbol
+            //            select candle;
+            //}
 
             // Lọc theo khoảng thời gian
             if (request.From != null)
@@ -104,7 +127,7 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
                 query = query.Where(x => x.id_m5 == request.id_m5);
             }
 
-            var result = await query.Take(100).OrderBy(x => x.datetime).ToListAsync(cancellationToken);
+            var result = await query.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).OrderBy(x => x.datetime).ToListAsync(cancellationToken);
             return _mapper.Map<List<OhlcDTO>>(result);
         }
         #endregion
@@ -114,17 +137,18 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
         {
             // Sử dụng cú pháp LINQ trực tiếp để tránh vấn đề với tên thuộc tính
             var query = from candle in _applicationDbContext.ohlc_m5
+                        where candle.asset_id == request.SymbolID
                         select candle;
 
             // Lọc theo Symbol nếu được cung cấp
-            if (!string.IsNullOrEmpty(request.Symbol))
-            {
-                query = from candle in query
-                        join asset in _applicationDbContext.assets
-                        on candle.asset_id equals asset.id
-                        where asset.symbol == request.Symbol
-                        select candle;
-            }
+            //if (!string.IsNullOrEmpty(request.Symbol))
+            //{
+            //    query = from candle in query
+            //            join asset in _applicationDbContext.assets
+            //            on candle.asset_id equals asset.id
+            //            where asset.symbol == request.Symbol
+            //            select candle;
+            //}
 
             // Lọc theo khoảng thời gian
             if (request.From != null)
@@ -184,7 +208,7 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
                 query = query.Where(x => x.id_m15 == request.id_m15);
             }
 
-            var result = await query.OrderBy(x => x.datetime).ToListAsync(cancellationToken);
+            var result = await query.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).OrderBy(x => x.datetime).ToListAsync(cancellationToken);
             return _mapper.Map<List<OhlcDTO>>(result);
         }
         #endregion
@@ -194,17 +218,18 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
         {
             // Sử dụng cú pháp LINQ trực tiếp để tránh vấn đề với tên thuộc tính
             var query = from candle in _applicationDbContext.ohlc_m15
+                        where candle.asset_id == request.SymbolID
                         select candle;
 
             // Lọc theo Symbol nếu được cung cấp
-            if (!string.IsNullOrEmpty(request.Symbol))
-            {
-                query = from candle in query
-                        join asset in _applicationDbContext.assets
-                        on candle.asset_id equals asset.id
-                        where asset.symbol == request.Symbol
-                        select candle;
-            }
+            //if (!string.IsNullOrEmpty(request.Symbol))
+            //{
+            //    query = from candle in query
+            //            join asset in _applicationDbContext.assets
+            //            on candle.asset_id equals asset.id
+            //            where asset.symbol == request.Symbol
+            //            select candle;
+            //}
 
             // Lọc theo khoảng thời gian
             if (request.From != null)
@@ -259,7 +284,7 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
                 query = query.Where(x => x.id_m30 == request.id_m30);
             }
 
-            var result = await query.OrderBy(x => x.datetime).ToListAsync(cancellationToken);
+            var result = await query.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).OrderBy(x => x.datetime).ToListAsync(cancellationToken);
             return _mapper.Map<List<OhlcDTO>>(result);
         }
         #endregion
@@ -269,17 +294,18 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
         {
             // Sử dụng cú pháp LINQ trực tiếp để tránh vấn đề với tên thuộc tính
             var query = from candle in _applicationDbContext.ohlc_m30
+                        where candle.asset_id == request.SymbolID
                         select candle;
 
             // Lọc theo Symbol nếu được cung cấp
-            if (!string.IsNullOrEmpty(request.Symbol))
-            {
-                query = from candle in query
-                        join asset in _applicationDbContext.assets
-                        on candle.asset_id equals asset.id
-                        where asset.symbol == request.Symbol
-                        select candle;
-            }
+            //if (!string.IsNullOrEmpty(request.Symbol))
+            //{
+            //    query = from candle in query
+            //            join asset in _applicationDbContext.assets
+            //            on candle.asset_id equals asset.id
+            //            where asset.symbol == request.Symbol
+            //            select candle;
+            //}
 
             // Lọc theo khoảng thời gian
             if (request.From != null)
@@ -329,7 +355,7 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
                 query = query.Where(x => x.id_h1 == request.id_h1);
             }
 
-            var result = await query.OrderBy(x => x.datetime).ToListAsync(cancellationToken);
+            var result = await query.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).OrderBy(x => x.datetime).ToListAsync(cancellationToken);
             return _mapper.Map<List<OhlcDTO>>(result);
         }
         #endregion
@@ -339,17 +365,18 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
         {
             // Sử dụng cú pháp LINQ trực tiếp để tránh vấn đề với tên thuộc tính
             var query = from candle in _applicationDbContext.ohlc_h1
+                        where candle.asset_id == request.SymbolID
                         select candle;
 
             // Lọc theo Symbol nếu được cung cấp
-            if (!string.IsNullOrEmpty(request.Symbol))
-            {
-                query = from candle in query
-                        join asset in _applicationDbContext.assets
-                        on candle.asset_id equals asset.id
-                        where asset.symbol == request.Symbol
-                        select candle;
-            }
+            //if (!string.IsNullOrEmpty(request.Symbol))
+            //{
+            //    query = from candle in query
+            //            join asset in _applicationDbContext.assets
+            //            on candle.asset_id equals asset.id
+            //            where asset.symbol == request.Symbol
+            //            select candle;
+            //}
 
             // Lọc theo khoảng thời gian
             if (request.From != null)
@@ -394,7 +421,7 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
                 query = query.Where(x => x.id_h4 == request.id_h4);
             }
 
-            var result = await query.OrderBy(x => x.datetime).ToListAsync(cancellationToken);
+            var result = await query.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).OrderBy(x => x.datetime).ToListAsync(cancellationToken);
             return _mapper.Map<List<OhlcDTO>>(result);
         }
         #endregion
@@ -404,17 +431,18 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
         {
             // Sử dụng cú pháp LINQ trực tiếp để tránh vấn đề với tên thuộc tính
             var query = from candle in _applicationDbContext.ohlc_h4
+                        where candle.asset_id == request.SymbolID
                         select candle;
 
             // Lọc theo Symbol nếu được cung cấp
-            if (!string.IsNullOrEmpty(request.Symbol))
-            {
-                query = from candle in query
-                        join asset in _applicationDbContext.assets
-                        on candle.asset_id equals asset.id
-                        where asset.symbol == request.Symbol
-                        select candle;
-            }
+            //if (!string.IsNullOrEmpty(request.Symbol))
+            //{
+            //    query = from candle in query
+            //            join asset in _applicationDbContext.assets
+            //            on candle.asset_id equals asset.id
+            //            where asset.symbol == request.Symbol
+            //            select candle;
+            //}
 
             // Lọc theo khoảng thời gian
             if (request.From != null)
@@ -454,7 +482,7 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
                 query = query.Where(x => x.id_h12 == request.id_h12);
             }
 
-            var result = await query.OrderBy(x => x.datetime).ToListAsync(cancellationToken);
+            var result = await query.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).OrderBy(x => x.datetime).ToListAsync(cancellationToken);
             return _mapper.Map<List<OhlcDTO>>(result);
         }
         #endregion
@@ -464,17 +492,18 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
         {
             // Sử dụng cú pháp LINQ trực tiếp để tránh vấn đề với tên thuộc tính
             var query = from candle in _applicationDbContext.ohlc_h12
+                        where candle.asset_id == request.SymbolID
                         select candle;
 
             // Lọc theo Symbol nếu được cung cấp
-            if (!string.IsNullOrEmpty(request.Symbol))
-            {
-                query = from candle in query
-                        join asset in _applicationDbContext.assets
-                        on candle.asset_id equals asset.id
-                        where asset.symbol == request.Symbol
-                        select candle;
-            }
+            //if (!string.IsNullOrEmpty(request.Symbol))
+            //{
+            //    query = from candle in query
+            //            join asset in _applicationDbContext.assets
+            //            on candle.asset_id equals asset.id
+            //            where asset.symbol == request.Symbol
+            //            select candle;
+            //}
 
             // Lọc theo khoảng thời gian
             if (request.From != null)
@@ -509,7 +538,7 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
                 query = query.Where(x => x.id_day == request.id_day);
             }
 
-            var result = await query.OrderBy(x => x.datetime).ToListAsync(cancellationToken);
+            var result = await query.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).OrderBy(x => x.datetime).ToListAsync(cancellationToken);
             return _mapper.Map<List<OhlcDTO>>(result);
         }
         #endregion
@@ -519,17 +548,18 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
         {
             // Sử dụng cú pháp LINQ trực tiếp để tránh vấn đề với tên thuộc tính
             var query = from candle in _applicationDbContext.ohlc_day
+                        where candle.asset_id == request.SymbolID
                         select candle;
 
             // Lọc theo Symbol nếu được cung cấp
-            if (!string.IsNullOrEmpty(request.Symbol))
-            {
-                query = from candle in query
-                        join asset in _applicationDbContext.assets
-                        on candle.asset_id equals asset.id
-                        where asset.symbol == request.Symbol
-                        select candle;
-            }
+            //if (!string.IsNullOrEmpty(request.Symbol))
+            //{
+            //    query = from candle in query
+            //            join asset in _applicationDbContext.assets
+            //            on candle.asset_id equals asset.id
+            //            where asset.symbol == request.Symbol
+            //            select candle;
+            //}
 
             // Lọc theo khoảng thời gian
             if (request.From != null)
@@ -559,7 +589,7 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
                 query = query.Where(x => x.id_week == request.id_week);
             }
 
-            var result = await query.OrderBy(x => x.datetime).ToListAsync(cancellationToken);
+            var result = await query.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).OrderBy(x => x.datetime).ToListAsync(cancellationToken);
             return _mapper.Map<List<OhlcDTO>>(result);
         }
         #endregion
@@ -569,17 +599,18 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
         {
             // Sử dụng cú pháp LINQ trực tiếp để tránh vấn đề với tên thuộc tính
             var query = from candle in _applicationDbContext.ohlc_week
+                        where candle.asset_id == request.SymbolID
                         select candle;
 
             // Lọc theo Symbol nếu được cung cấp
-            if (!string.IsNullOrEmpty(request.Symbol))
-            {
-                query = from candle in query
-                        join asset in _applicationDbContext.assets
-                        on candle.asset_id equals asset.id
-                        where asset.symbol == request.Symbol
-                        select candle;
-            }
+            //if (!string.IsNullOrEmpty(request.Symbol))
+            //{
+            //    query = from candle in query
+            //            join asset in _applicationDbContext.assets
+            //            on candle.asset_id equals asset.id
+            //            where asset.symbol == request.Symbol
+            //            select candle;
+            //}
 
             // Lọc theo khoảng thời gian
             if (request.From != null)
@@ -604,7 +635,7 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
                 query = query.Where(x => x.id_month == request.id_month);
             }
 
-            var result = await query.OrderBy(x => x.datetime).ToListAsync(cancellationToken);
+            var result = await query.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).OrderBy(x => x.datetime).ToListAsync(cancellationToken);
             return _mapper.Map<List<OhlcDTO>>(result);
         }
         #endregion
@@ -614,17 +645,18 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
         {
             // Sử dụng cú pháp LINQ trực tiếp để tránh vấn đề với tên thuộc tính
             var query = from candle in _applicationDbContext.ohlc_month
+                        where candle.asset_id == request.SymbolID
                         select candle;
 
             // Lọc theo Symbol nếu được cung cấp
-            if (!string.IsNullOrEmpty(request.Symbol))
-            {
-                query = from candle in query
-                        join asset in _applicationDbContext.assets
-                        on candle.asset_id equals asset.id
-                        where asset.symbol == request.Symbol
-                        select candle;
-            }
+            //if (!string.IsNullOrEmpty(request.Symbol))
+            //{
+            //    query = from candle in query
+            //            join asset in _applicationDbContext.assets
+            //            on candle.asset_id equals asset.id
+            //            where asset.symbol == request.Symbol
+            //            select candle;
+            //}
 
             // Lọc theo khoảng thời gian
             if (request.From != null)
@@ -643,7 +675,7 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
                 query = query.Where(x => x.broker == request.Broker);
             }
 
-            var result = await query.OrderBy(x => x.datetime).ToListAsync(cancellationToken);
+            var result = await query.Skip((request.PageNumber - 1) * request.PageSize).Take(request.PageSize).OrderBy(x => x.datetime).ToListAsync(cancellationToken);
             return _mapper.Map<List<OhlcDTO>>(result);
         }
         #endregion

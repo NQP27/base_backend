@@ -11,8 +11,10 @@
         public long? id_m30 { get; set; }
         public long? id_m15 { get; set; }
         public long? id_m5 { get; set; }
+        public int PageSize { get; set; }
+        public int PageNumber { get; set; }
         public int TimeFrame { get; set; }
-        public string Symbol { get; set; }
+        public int SymbolID { get; set; }
         public string Broker { get; set; }
         public DateTime? From { get; set; } = null;
         public DateTime? To { get; set; } = null;

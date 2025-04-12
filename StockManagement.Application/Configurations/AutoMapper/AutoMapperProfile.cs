@@ -12,6 +12,8 @@ namespace StockManagement.Application.Configurations.AutoMapper
         public AutoMapperProfile()
         {
             CreateMap<ListCandleQuery, ListCandleQueryDTO>().ReverseMap().ForAllMembers(x => x.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<ListSymbolQuery, ListSymbolQueryDTO>().ReverseMap().ForAllMembers(x => x.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<assets, AssetDTO>().ReverseMap().ForAllMembers(x => x.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<OhlcDTO, ohlc_m1>().ReverseMap().ForAllMembers(x => x.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<OhlcDTO, ohlc_m5>().ReverseMap().ForAllMembers(x => x.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<OhlcDTO, ohlc_m15>().ReverseMap().ForAllMembers(x => x.Condition((src, dest, srcMember) => srcMember != null));

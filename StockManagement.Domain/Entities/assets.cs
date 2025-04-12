@@ -6,9 +6,9 @@ namespace StockManagement.Domain.Entities
     {
         [Key]
         public long id { get; set; }
-        public string symbol { get; set; }
-        public string prename { get; set; }
-        public string type { get; set; }
+        public string? symbol { get; set; }
+        public string? prename { get; set; }
+        public string? type { get; set; }
         public TimeSpan? us_open { get; set; }
         public TimeSpan? us_close { get; set; }
         public TimeSpan? asia_open { get; set; }

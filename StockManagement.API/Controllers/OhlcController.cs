@@ -70,6 +70,44 @@ namespace StockManagement.API.Controllers
         }
         #endregion
 
+        #region ListCandle
+        [HttpPost("list-symbol")]
+        //[Authorize]
+        [AllowAnonymous]
+        public async Task<IActionResult> ListSymbol([FromBody] ListSymbolQuery request, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation($"OhlcController - ListCandle");
+            if (!ModelState.IsValid)
+            {
+                string errorMessage = string.Join(" | ", ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage));
+                return BadRequest(new { Message = errorMessage });
+            }
+            try
+            {
+                var res = await _mediator.Send(request);
+
+                return Ok(new
+                {
+                    Message = "Data(s) was fetched successfully!",
+                    Data = res
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "Conflict occurred: {Message}", ex.Message);
+                return Conflict(new { ex.Message });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(500, new
+                {
+                    Message = $"Internal error while fetching data(s): {e.Message}"
+                });
+            }
+        }
+        #endregion
+
 
     }
 }
