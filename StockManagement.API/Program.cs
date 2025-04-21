@@ -60,17 +60,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll",
         builder =>
         {
-            builder.WithOrigins(
-                    "http://localhost:3000",
-                    "https://localhost:2702",
-                    "http://localhost:2702"
-                )
+            builder.AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials();
+                .AllowAnyHeader();
         });
 });
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

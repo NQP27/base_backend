@@ -67,12 +67,12 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
             // Lọc theo khoảng thời gian
             if (request.From != null)
             {
-                query = query.Where(x => x.datetime >= request.From);
+                query = query.Where(x => x.datetime >= request.From.Value.AddHours(7));
             }
 
             if (request.To != null)
             {
-                query = query.Where(x => x.datetime <= request.To);
+                query = query.Where(x => x.datetime <= request.To.Value.AddHours(7));
             }
 
             // Lọc theo Broker
@@ -153,12 +153,12 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
             // Lọc theo khoảng thời gian
             if (request.From != null)
             {
-                query = query.Where(x => x.datetime >= request.From);
+                query = query.Where(x => x.datetime >= request.From.Value.AddHours(7));
             }
 
             if (request.To != null)
             {
-                query = query.Where(x => x.datetime <= request.To);
+                query = query.Where(x => x.datetime <= request.To.Value.AddHours(7));
             }
 
             // Lọc theo Broker
@@ -234,12 +234,12 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
             // Lọc theo khoảng thời gian
             if (request.From != null)
             {
-                query = query.Where(x => x.datetime >= request.From);
+                query = query.Where(x => x.datetime >= request.From.Value.AddHours(7));
             }
 
             if (request.To != null)
             {
-                query = query.Where(x => x.datetime <= request.To);
+                query = query.Where(x => x.datetime <= request.To.Value.AddHours(7));
             }
 
             // Lọc theo Broker
@@ -310,12 +310,12 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
             // Lọc theo khoảng thời gian
             if (request.From != null)
             {
-                query = query.Where(x => x.datetime >= request.From);
+                query = query.Where(x => x.datetime >= request.From.Value.AddHours(7));
             }
 
             if (request.To != null)
             {
-                query = query.Where(x => x.datetime <= request.To);
+                query = query.Where(x => x.datetime <= request.To.Value.AddHours(7));
             }
 
             // Lọc theo Broker
@@ -381,12 +381,12 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
             // Lọc theo khoảng thời gian
             if (request.From != null)
             {
-                query = query.Where(x => x.datetime >= request.From);
+                query = query.Where(x => x.datetime >= request.From.Value.AddHours(7));
             }
 
             if (request.To != null)
             {
-                query = query.Where(x => x.datetime <= request.To);
+                query = query.Where(x => x.datetime <= request.To.Value.AddHours(7));
             }
 
             // Lọc theo Broker
@@ -447,12 +447,12 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
             // Lọc theo khoảng thời gian
             if (request.From != null)
             {
-                query = query.Where(x => x.datetime >= request.From);
+                query = query.Where(x => x.datetime >= request.From.Value.AddHours(7));
             }
 
             if (request.To != null)
             {
-                query = query.Where(x => x.datetime <= request.To);
+                query = query.Where(x => x.datetime <= request.To.Value.AddHours(7));
             }
 
             // Lọc theo Broker
@@ -508,12 +508,12 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
             // Lọc theo khoảng thời gian
             if (request.From != null)
             {
-                query = query.Where(x => x.datetime >= request.From);
+                query = query.Where(x => x.datetime >= request.From.Value.AddHours(7));
             }
 
             if (request.To != null)
             {
-                query = query.Where(x => x.datetime <= request.To);
+                query = query.Where(x => x.datetime <= request.To.Value.AddHours(7));
             }
 
             // Lọc theo Broker
@@ -564,12 +564,12 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
             // Lọc theo khoảng thời gian
             if (request.From != null)
             {
-                query = query.Where(x => x.datetime >= request.From);
+                query = query.Where(x => x.datetime >= request.From.Value.AddHours(7));
             }
 
             if (request.To != null)
             {
-                query = query.Where(x => x.datetime <= request.To);
+                query = query.Where(x => x.datetime <= request.To.Value.AddHours(7));
             }
 
             // Lọc theo Broker
@@ -615,12 +615,12 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
             // Lọc theo khoảng thời gian
             if (request.From != null)
             {
-                query = query.Where(x => x.datetime >= request.From);
+                query = query.Where(x => x.datetime >= request.From.Value.AddHours(7));
             }
 
             if (request.To != null)
             {
-                query = query.Where(x => x.datetime <= request.To);
+                query = query.Where(x => x.datetime <= request.To.Value.AddHours(7));
             }
 
             // Lọc theo Broker
@@ -661,12 +661,12 @@ namespace StockManagement.Infrastructure.Persistences.Repositories
             // Lọc theo khoảng thời gian
             if (request.From != null)
             {
-                query = query.Where(x => x.datetime >= request.From);
+                query = query.Where(x => x.datetime >= request.From.Value.AddHours(7));
             }
 
             if (request.To != null)
             {
-                query = query.Where(x => x.datetime <= request.To);
+                query = query.Where(x => x.datetime <= request.To.Value.AddHours(7));
             }
 
             // Lọc theo Broker

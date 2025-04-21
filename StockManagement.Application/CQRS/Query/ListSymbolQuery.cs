@@ -10,7 +10,7 @@ namespace StockManagement.Application.CQRS.Query
 {
     public class ListSymbolQuery : IRequest<PaginatedData<AssetDTO>>
     {
-        public int PageSize { get; set; } = 100;
+        public int PageSize { get; set; } = 1000;
         public int PageNumber { get; set; } = 1;
         public string? Symbol { get; set; }
     }

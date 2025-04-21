@@ -19,7 +19,7 @@ namespace StockManagement.Application.CQRS.Query
         public long? id_m30 { get; set; }
         public long? id_m15 { get; set; }
         public long? id_m5 { get; set; }
-        public int PageSize { get; set; } = 100;
+        public int PageSize { get; set; } = 3000;
         public int PageNumber { get; set; } = 1;
         public int TimeFrame { get; set; }
         public int SymbolID { get; set; }
